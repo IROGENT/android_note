@@ -28,10 +28,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install cython==0.29.33
           pip install buildozer
-
-      - name: Clone python-for-android
-        run: |
-          git clone https://github.com/kivy/python-for-android.git .buildozer/android/platform/python-for-android
+          pip install appdirs colorama jinja2 sh
 
       - name: Build APK with Buildozer
         run: |
@@ -45,6 +42,7 @@ jobs:
         with:
           name: build-log
           path: build.log
+        if: always()
 
       - name: Upload APK if exists
         uses: actions/upload-artifact@v4
