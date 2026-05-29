@@ -30,10 +30,29 @@ jobs:
           pip install buildozer
 
       - name: Build APK with Buildozer
-        run: buildozer -v android debug
+        run: |
+          buildozer android clean
+          buildozer -v android debug 2>&1 | tee build.log
+        continue-on-error: true
 
-      - name: Upload APK artifact
+      - name: Upload build log
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
+
+      - name: Upload APK if exists
         uses: actions/upload-artifact@v4
         with:
           name: mynotes-apk
           path: ./bin/*.apk
+        continue-on-error: true
+
+      - name: Check build result
+        run: |
+          if [ -f bin/*.apk ]; then
+            echo "✅ APK created successfully!"
+          else
+            echo "❌ APK not found. Check build.log in artifacts"
+            exit 1
+          fi
