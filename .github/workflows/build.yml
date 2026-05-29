@@ -2,66 +2,49 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-22.04
-    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
 
-      - name: Install system dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
 
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install cython==0.29.33
-          pip install buildozer
+    - name: Install buildozer
+      run: |
+        pip install --upgrade pip
+        pip install buildozer cython virtualenv
 
-      - name: Initialize buildozer
-        run: |
-          # Создаём buildozer.spec если его нет
-          if [ ! -f buildozer.spec ]; then
-            buildozer init
-          fi
+    - name: Clean previous builds
+      run: |
+        rm -rf ~/.buildozer
+        rm -rf .buildozer
+        rm -rf bin
 
-      - name: Build APK with Buildozer
-        run: |
-          # Даём Buildozer самому скачать всё необходимое
-          buildozer -v android debug 2>&1 | tee build.log
-          echo "=== END OF BUILD LOG ==="
-        continue-on-error: true
+    - name: Build APK
+      run: |
+        buildozer -v android debug 2>&1 | tee build.log
 
-      - name: Upload build log
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-log
-          path: build.log
-        if: always()
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: mynotes-apk
+        path: bin/*.apk
 
-      - name: Upload APK if exists
-        uses: actions/upload-artifact@v4
-        with:
-          name: mynotes-apk
-          path: ./bin/*.apk
-        continue-on-error: true
-
-      - name: Check build result
-        run: |
-          if ls ./bin/*.apk 1> /dev/null 2>&1; then
-            echo "✅ APK created successfully!"
-          else
-            echo "❌ APK not found. Check build.log in artifacts"
-            exit 1
-          fi
+    - name: Upload build log
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-log
+        path: build.log
