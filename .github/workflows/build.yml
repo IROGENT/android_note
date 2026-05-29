@@ -28,11 +28,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install cython==0.29.33
           pip install buildozer
-          pip install appdirs colorama jinja2 sh
+
+      - name: Initialize buildozer
+        run: |
+          # Создаём buildozer.spec если его нет
+          if [ ! -f buildozer.spec ]; then
+            buildozer init
+          fi
 
       - name: Build APK with Buildozer
         run: |
-          buildozer android clean
+          # Даём Buildozer самому скачать всё необходимое
           buildozer -v android debug 2>&1 | tee build.log
           echo "=== END OF BUILD LOG ==="
         continue-on-error: true
