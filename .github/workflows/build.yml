@@ -32,8 +32,18 @@ jobs:
         rm -rf .buildozer
         rm -rf bin
 
+    - name: Download NDK 28c
+      run: |
+        mkdir -p ~/.buildozer/android/platform
+        cd ~/.buildozer/android/platform
+        wget https://dl.google.com/android/repository/android-ndk-r28c-linux.zip
+        unzip -q android-ndk-r28c-linux.zip
+        rm android-ndk-r28c-linux.zip
+
     - name: Build APK
       run: |
+        export ANDROIDNDK=/home/runner/.buildozer/android/platform/android-ndk-r28c
+        export ANDROID_NDK_HOME=/home/runner/.buildozer/android/platform/android-ndk-r28c
         export ANDROID_NDK_VERSION=28c
         buildozer -v android debug 2>&1 | tee build.log
 
