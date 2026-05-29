@@ -29,10 +29,15 @@ jobs:
           pip install cython==0.29.33
           pip install buildozer
 
+      - name: Clone python-for-android
+        run: |
+          git clone https://github.com/kivy/python-for-android.git .buildozer/android/platform/python-for-android
+
       - name: Build APK with Buildozer
         run: |
           buildozer android clean
           buildozer -v android debug 2>&1 | tee build.log
+          echo "=== END OF BUILD LOG ==="
         continue-on-error: true
 
       - name: Upload build log
@@ -50,7 +55,7 @@ jobs:
 
       - name: Check build result
         run: |
-          if [ -f bin/*.apk ]; then
+          if ls ./bin/*.apk 1> /dev/null 2>&1; then
             echo "✅ APK created successfully!"
           else
             echo "❌ APK not found. Check build.log in artifacts"
