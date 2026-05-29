@@ -7,7 +7,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,ttf,json
 version = 0.1
 
-requirements = python3==3.11.9,kivy==2.3.0,plyer,android,kivymd==1.1.1
+requirements = python3,kivy==2.2.0,plyer,android
 
 icon.filename = %(source.dir)s/icon.png
 
