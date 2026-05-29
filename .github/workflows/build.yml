@@ -34,6 +34,7 @@ jobs:
 
     - name: Build APK
       run: |
+        export ANDROID_NDK_VERSION=28c
         buildozer -v android debug 2>&1 | tee build.log
 
     - name: Upload APK
