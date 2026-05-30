@@ -7,7 +7,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,ttf,json
 version = 0.1
 
-requirements = python3==3.11.0, kivy
+requirements = python3,kivy,kivymd,plyer
 
 icon.filename = %(source.dir)s/icon.png
 
